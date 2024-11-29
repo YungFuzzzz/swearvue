@@ -8,21 +8,38 @@
 </template>
 
 <script>
+import Primus from 'primus';
+
 export default {
   data() {
     return {
-      totalOrders: 0
+      totalOrders: 0,
+      primus: null
     };
   },
   created() {
     this.fetchTotalOrders();
+    this.setupWebSocket();
+  },
+  beforeDestroy() {
+    if (this.primus) {
+      this.primus.end(); // Zorg ervoor dat de WebSocket wordt afgesloten bij het vernietigen van de component
+    }
   },
   methods: {
     async fetchTotalOrders() {
-      // Replace with your actual API endpoint to fetch the total orders
       const response = await fetch('/api/orders/count');
       const data = await response.json();
       this.totalOrders = data.count;
+    },
+    setupWebSocket() {
+      this.primus = new Primus('http://localhost:3000'); // WebSocket server URL
+
+      // Luister naar het 'new-order' event van de backend
+      this.primus.on('new-order', (order) => {
+        this.totalOrders++; // Verhoog de teller wanneer er een nieuwe bestelling binnenkomt
+        console.log('New order received:', order);
+      });
     },
     logout() {
       localStorage.removeItem('authToken');
