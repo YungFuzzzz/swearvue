@@ -2,7 +2,7 @@
 import io from 'socket.io-client';
 
 // Maak de WebSocket-verbinding met de server
-const socket = io('http://localhost:5173'); // Zorg ervoor dat je dit naar je server-URL wijst
+const socket = io('http://swear-api-uhq5.onrender.com'); // Zorg ervoor dat je dit naar je server-URL wijst
 
 // Functies om berichten te verzenden en ontvangen
 export const useWebSocket = () => {
