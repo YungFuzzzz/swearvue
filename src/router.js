@@ -1,21 +1,23 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Login from './components/Login.vue'
-import Dashboard from './components/Dashboard.vue'
-import Orders from './components/Orders.vue'
-import OrderDetail from './components/OrderDetail.vue'
-import PasswordChange from './components/PasswordChange.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import OrdersPage from './components/Orders.vue'; // Importeer de component die je wilt weergeven
 
 const routes = [
-  { path: '/', component: Login },
-  { path: '/dashboard', component: Dashboard },
-  { path: '/orders', component: Orders },
-  { path: '/orders/:id', component: OrderDetail },
-  { path: '/change-password', component: PasswordChange }
-]
+  {
+    path: '/', // Basisroute
+    name: 'home',
+    component: OrdersPage, // De component die je wilt tonen op de homepagina
+  },
+  {
+    path: '/orders',
+    name: 'orders',
+    component: OrdersPage,
+  },
+  // Voeg meer routes toe als nodig, bijvoorbeeld een route voor /orders/:id voor orderdetails
+];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

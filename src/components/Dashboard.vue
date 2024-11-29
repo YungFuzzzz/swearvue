@@ -8,44 +8,48 @@
 </template>
 
 <script>
-import Primus from 'primus';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { useWebSocket } from '@/services/WebSocketService'; // Import de WebSocketService
 
 export default {
-  data() {
-    return {
-      totalOrders: 0,
-      primus: null
-    };
-  },
-  created() {
-    this.fetchTotalOrders();
-    this.setupWebSocket();
-  },
-  beforeDestroy() {
-    if (this.primus) {
-      this.primus.end(); // Zorg ervoor dat de WebSocket wordt afgesloten bij het vernietigen van de component
-    }
-  },
-  methods: {
-    async fetchTotalOrders() {
+  name: 'Dashboard',
+  setup() {
+    const totalOrders = ref(0); // Gebruik de reactive variabele voor totalOrders
+    const { onNewOrder } = useWebSocket(); // Verkrijg de WebSocket-methoden
+
+    // Functie om het aantal bestellingen op te halen
+    const fetchTotalOrders = async () => {
       const response = await fetch('/api/orders/count');
       const data = await response.json();
-      this.totalOrders = data.count;
-    },
-    setupWebSocket() {
-      this.primus = new Primus('http://localhost:3000'); // WebSocket server URL
+      totalOrders.value = data.count;
+    };
 
-      // Luister naar het 'new-order' event van de backend
-      this.primus.on('new-order', (order) => {
-        this.totalOrders++; // Verhoog de teller wanneer er een nieuwe bestelling binnenkomt
+    // WebSocket instellen en luisteren naar nieuwe bestellingen
+    onMounted(() => {
+      fetchTotalOrders();
+
+      // Luister naar de 'new-order' event van de WebSocket service
+      onNewOrder((order) => {
+        totalOrders.value++; // Verhoog de totaal aantal bestellingen
         console.log('New order received:', order);
       });
-    },
-    logout() {
+    });
+
+    // Opschonen bij het vernietigen van de component
+    onBeforeUnmount(() => {
+      // Als nodig kan je hier andere schoonmaakacties uitvoeren voor WebSocket
+    });
+
+    const logout = () => {
       localStorage.removeItem('authToken');
       this.$router.push('/');
-    }
-  }
+    };
+
+    return {
+      totalOrders,
+      logout,
+    };
+  },
 };
 </script>
 
