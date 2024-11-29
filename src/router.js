@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import OrdersPage from './components/Orders.vue'; // Importeer de component die je wilt weergeven
+import OrdersPage from './components/Orders.vue'; // Importeer de component voor orders
+import LoginPage from './components/Login.vue';   // Importeer de component voor login
 
 const routes = [
   {
@@ -10,9 +11,14 @@ const routes = [
   {
     path: '/orders',
     name: 'orders',
-    component: OrdersPage,
+    component: OrdersPage, // Orderspagina voor admins
   },
-  // Voeg meer routes toe als nodig, bijvoorbeeld een route voor /orders/:id voor orderdetails
+  {
+    path: '/login', // Route voor de loginpagina
+    name: 'login',
+    component: LoginPage, // De logincomponent
+  },
+  // Voeg andere routes toe indien nodig
 ];
 
 const router = createRouter({
