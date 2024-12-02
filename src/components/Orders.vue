@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Orders</h1>
+    <h1>ORDERS</h1>
     <ul>
       <li v-for="order in orders" :key="order.id">{{ order.name }}</li>
     </ul>

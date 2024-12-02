@@ -2,8 +2,8 @@
   <div id="app">
     <!-- Voeg hier een navigatielink toe als je wilt -->
     <nav>
-      <router-link to="/">Home</router-link>
-      <router-link to="/orders">Orders</router-link>
+      <router-link to="/">HOME</router-link>
+      <router-link to="/orders">ORDERS</router-link>
     </nav>
 
     <!-- Dit is de plaats waar de inhoud van de huidige route wordt weergegeven -->
