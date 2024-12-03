@@ -27,22 +27,19 @@ export default {
     return {
       username: '',
       password: '',
-      errorMessage: '', // Voor het tonen van foutmeldingen
+      errorMessage: '',
     };
   },
   methods: {
     handleLogin() {
-      // Simpele hardcoded admin credentials
       const adminCredentials = { username: 'admin', password: '1234' };
 
       if (
         this.username === adminCredentials.username &&
         this.password === adminCredentials.password
       ) {
-        // Redirect naar de dashboard-pagina
         this.$router.push('/dashboard');
       } else {
-        // Toon foutmelding
         this.errorMessage = 'Ongeldige gebruikersnaam of wachtwoord.';
       }
     },
