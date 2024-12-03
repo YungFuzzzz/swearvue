@@ -7,6 +7,7 @@
 
 <script>
 import Navbar from './components/Navbar.vue';
+import OrderList from './components/OrderList.vue';
 
 export default {
   name: 'App',
@@ -17,7 +18,6 @@ export default {
 </script>
 
 <style>
-/* Optioneel: globale CSS */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
