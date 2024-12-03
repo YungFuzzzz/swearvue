@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/dashboard',
     component: Dashboard,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }, // Beschermde route
   },
 ];
 
@@ -17,12 +17,13 @@ const router = createRouter({
   routes,
 });
 
+// Globale route guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = !!localStorage.getItem('token'); // Check of de gebruiker is ingelogd
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login');
+    next('/login'); // Redirect naar login als de gebruiker niet ingelogd is
   } else {
-    next();
+    next(); // Verder gaan naar de gewenste route
   }
 });
 

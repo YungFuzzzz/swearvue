@@ -2,47 +2,93 @@
   <div class="login-container">
     <h1>Admin Login</h1>
     <form @submit.prevent="handleLogin">
-      <input
-        type="text"
-        v-model="username"
-        placeholder="Gebruikersnaam"
-        required
-      />
-      <input
-        type="password"
-        v-model="password"
-        placeholder="Wachtwoord"
-        required
-      />
-      <button type="submit">Inloggen</button>
+      <div class="form-group">
+        <label for="username">Gebruikersnaam</label>
+        <input
+          type="text"
+          id="username"
+          v-model="username"
+          placeholder="Voer je gebruikersnaam in"
+        />
+      </div>
+      <div class="form-group">
+        <label for="password">Wachtwoord</label>
+        <input
+          type="password"
+          id="password"
+          v-model="password"
+          placeholder="Voer je wachtwoord in"
+        />
+      </div>
+      <button type="submit">Login</button>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </form>
   </div>
 </template>
 
 <script>
+import { io } from 'socket.io-client';
+
 export default {
-  name: 'Login',
   data() {
     return {
       username: '',
       password: '',
+      socket: null,
       errorMessage: '',
     };
   },
   methods: {
     handleLogin() {
-      const adminCredentials = { username: 'admin', password: '1234' };
-
-      if (
-        this.username === adminCredentials.username &&
-        this.password === adminCredentials.password
-      ) {
-        this.$router.push('/dashboard');
-      } else {
-        this.errorMessage = 'Ongeldige gebruikersnaam of wachtwoord.';
+      if (!this.socket || !this.socket.connected) {
+        console.error('Geen verbinding met de server.');
+        this.errorMessage = 'Geen verbinding met de server.';
+        return;
       }
+
+      console.log('Login versturen:', { username: this.username, password: this.password });
+
+      // Verstuur login event
+      this.socket.emit('login', {
+        username: this.username,
+        password: this.password,
+      });
+
+      // Luister op login response
+      this.socket.once('loginResponse', (response) => {
+        console.log('Serverantwoord ontvangen:', response);
+
+        if (response.success) {
+          console.log('Login succesvol!');
+          localStorage.setItem('token', response.token); // Sla het token op
+          this.$router.push('/dashboard'); // Navigeer naar dashboard
+        } else {
+          console.error('Fout bij inloggen:', response.message);
+          this.errorMessage = response.message || 'Login mislukt.';
+        }
+      });
     },
+  },
+  created() {
+    // Verbinden met WebSocket-server op Render.com
+    this.socket = io('https://swear-api-uhq5.onrender.com/', {
+      transports: ['websocket'],
+      reconnectionAttempts: 5, // Probeer opnieuw te verbinden indien nodig
+    });
+
+    // Luister op connectie-gebeurtenissen
+    this.socket.on('connect', () => {
+      console.log('Succesvol verbonden met de WebSocket-server:', this.socket.id);
+    });
+
+    this.socket.on('connect_error', (err) => {
+      console.error('Fout bij verbinden:', err.message);
+    });
+  },
+  beforeDestroy() {
+    if (this.socket) {
+      this.socket.disconnect(); // Verbreek de verbinding netjes
+    }
   },
 };
 </script>
@@ -50,51 +96,43 @@ export default {
 <style scoped>
 .login-container {
   max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.login-container h1 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.login-container form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.login-container input[type="text"],
-.login-container input[type="password"] {
-  padding: 0.75rem;
+  margin: 0 auto;
+  padding: 20px;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
-.login-container button {
-  padding: 0.75rem;
-  background-color: #4CAF50;
-  color: white;
+.form-group {
+  margin-bottom: 16px;
+}
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+input {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+button {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
-
-.login-container button:hover {
-  background-color: #45a049;
+button:hover {
+  background-color: #0056b3;
 }
-
 .error-message {
   color: red;
-  font-size: 0.9rem;
-  margin-top: -0.5rem;
-  text-align: center;
+  margin-top: 8px;
+  font-size: 14px;
 }
 </style>
