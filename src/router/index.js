@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/Login.vue';
 import Dashboard from '../views/Dashboard.vue';
+import OrderDetails from '../views/OrderDetails.vue';
+import ChangePassword from '../views/ChangePassword.vue';
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -8,7 +10,17 @@ const routes = [
   {
     path: '/dashboard',
     component: Dashboard,
-    meta: { requiresAuth: true }, // Beschermde route
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/orders/:id',
+    component: OrderDetails,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/change-password',
+    component: ChangePassword,
+    meta: { requiresAuth: true },
   },
 ];
 
@@ -17,13 +29,12 @@ const router = createRouter({
   routes,
 });
 
-// Globale route guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // Check of de gebruiker is ingelogd
+  const isAuthenticated = !!localStorage.getItem('token');
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login'); // Redirect naar login als de gebruiker niet ingelogd is
+    next('/login');
   } else {
-    next(); // Verder gaan naar de gewenste route
+    next();
   }
 });
 
