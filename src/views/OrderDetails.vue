@@ -1,60 +1,48 @@
 <template>
-  <div class="order-details" v-if="order">
-    <h1>Bestelling ID: {{ order.id }}</h1>
-    <p><strong>Status:</strong> {{ order.status }}</p>
-    <p><strong>Details:</strong> {{ order.details }}</p>
-    <button @click="updateOrderStatus('verzonden')">Markeer als Verzonden</button>
-    <button @click="updateOrderStatus('geannuleerd')">Markeer als Geannuleerd</button>
-  </div>
-  <div v-else>
-    <p>Bestelling niet gevonden.</p>
+  <div class="order-details">
+    <h1>Order Details</h1>
+    <div v-if="error" class="error">{{ error }}</div>
+    <div v-if="order">
+      <h2>Order ID: {{ order._id }}</h2>
+      <p><strong>Kleur:</strong> {{ order.color }}</p>
+      <p><strong>Materiaal:</strong> {{ order.material }}</p>
+      <p><strong>Maat:</strong> {{ order.size }}</p>
+      <p><strong>Status:</strong> {{ order.status }}</p>
+    </div>
+    <div v-else>
+      <p>Loading order...</p>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      order: null, // De bestelling
+      order: null, // Houd de ordergegevens bij
+      error: null, // Foutmelding indien nodig
     };
+  },
+  created() {
+    this.fetchOrderDetails(); // Haal de orderdetails op zodra het component wordt geladen
   },
   methods: {
     fetchOrderDetails() {
-      const orderId = this.$route.params.id; // Haal de ID op van de route
+      const orderId = this.$route.params.id; // Haal de order ID op uit de URL
       axios
         .get(`https://swear-api-uhq5.onrender.com/api/v1/orders/${orderId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
         .then((response) => {
-          this.order = response.data; // Bewaar de bestelling
+          this.order = response.data.data; // Zet de ontvangen order in de `order` array
         })
         .catch((error) => {
-          console.error("Fout bij het ophalen van de bestelling:", error);
-          // Voeg hier optioneel een foutmelding toe voor de gebruiker
+          console.error('Fout bij het ophalen van de bestelling:', error);
+          this.error = 'Er is een probleem met het ophalen van de bestelling.'; // Toon een foutmelding
         });
     },
-    updateOrderStatus(status) {
-      // Voeg hier de logica toe voor het bijwerken van de bestellingstatus
-      axios
-        .put(
-          `https://swear-api-uhq5.onrender.com/api/v1/orders/${this.order.id}`,
-          { status },
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          }
-        )
-        .then((response) => {
-          this.order.status = status; // Update de status lokaal
-        })
-        .catch((error) => {
-          console.error("Fout bij het updaten van de bestellingstatus:", error);
-        });
-    },
-  },
-  created() {
-    this.fetchOrderDetails(); // Haal de bestellingdetails op bij het laden van de component
   },
 };
 </script>
@@ -63,21 +51,18 @@ export default {
 .order-details {
   padding: 20px;
   background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  padding: 10px 15px;
-  margin: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.error {
+  color: red;
+  font-weight: bold;
 }
 
-button:hover {
-  background-color: #0056b3;
+.order-details h2 {
+  margin-bottom: 10px;
+}
+
+.order-details p {
+  margin: 5px 0;
 }
 </style>
