@@ -53,15 +53,13 @@ export default {
         username: this.username,
         password: this.password,
       });
-
-      // Luister op login response
       this.socket.once('loginResponse', (response) => {
         console.log('Serverantwoord ontvangen:', response);
 
         if (response.success) {
           console.log('Login succesvol!');
-          localStorage.setItem('token', response.token); // Sla het token op
-          this.$router.push('/dashboard'); // Navigeer naar dashboard
+          localStorage.setItem('token', response.token);
+          this.$router.push('/dashboard');
         } else {
           console.error('Fout bij inloggen:', response.message);
           this.errorMessage = response.message || 'Login mislukt.';
@@ -73,10 +71,8 @@ export default {
     // Verbinden met WebSocket-server op Render.com
     this.socket = io('https://swear-api-uhq5.onrender.com/', {
       transports: ['websocket'],
-      reconnectionAttempts: 5, // Probeer opnieuw te verbinden indien nodig
+      reconnectionAttempts: 5,
     });
-
-    // Luister op connectie-gebeurtenissen
     this.socket.on('connect', () => {
       console.log('Succesvol verbonden met de WebSocket-server:', this.socket.id);
     });
@@ -87,7 +83,7 @@ export default {
   },
   beforeDestroy() {
     if (this.socket) {
-      this.socket.disconnect(); // Verbreek de verbinding netjes
+      this.socket.disconnect();
     }
   },
 };
@@ -121,14 +117,14 @@ button {
   width: 100%;
   padding: 10px;
   font-size: 16px;
-  background-color: #007bff;
-  color: #fff;
+  background-color: #69ff47;
+  color: #000;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 button:hover {
-  background-color: #0056b3;
+  background-color: #2ffc01;
 }
 .error-message {
   color: red;

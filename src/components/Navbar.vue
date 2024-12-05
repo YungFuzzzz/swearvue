@@ -14,7 +14,7 @@
   </script>
   <style scoped>
   nav {
-    background-color: #4CAF50;
+    background-color: #69ff47;
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -35,12 +35,12 @@
   
   nav ul li a {
     text-decoration: none;
-    color: white;
+    color: #000;
     font-weight: bold;
     transition: color 0.3s;
   }
   
   nav ul li a:hover {
-    color: #d4f0d4;
+    text-decoration: underline;
   }
   </style>
