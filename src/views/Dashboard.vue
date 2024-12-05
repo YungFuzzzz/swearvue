@@ -22,7 +22,6 @@
           <p><strong>Status:</strong> <span :class="getStatusClass(order.status)">{{ order.status }}</span></p>
         </div>
 
-        <!-- Extra details als je meer informatie wil tonen -->
         <div v-if="order.customization" class="customization">
           <p><strong>Aangepaste opties:</strong> {{ order.customization }}</p>
         </div>
@@ -41,39 +40,63 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      orders: [], // Lijst van bestellingen
+      orders: [],
       error: null, // Foutmelding indien nodig
+      ws: null, // WebSocket verbinding
     };
   },
   created() {
-    this.checkConnection(); // Check de verbinding bij het laden van de pagina
+    this.openWebSocket();
+    this.fetchOrders(); // Ophalen van bestellingen bij het laden van de pagina
   },
   methods: {
-    checkConnection() {
-      // Controleer de verbinding met de API voor het ophalen van bestellingen
+    openWebSocket() {
+      // Maak een WebSocket verbinding met de server
+      this.ws = new WebSocket('wss://je-websocket-server-url'); // Vergeet de juiste WebSocket URL in te stellen!
+
+      this.ws.onopen = () => {
+        console.log('WebSocket verbonden!');
+      };
+
+      this.ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('WebSocket bericht ontvangen:', data);
+
+        // Werk de bestellingenlijst bij als er een wijziging is
+        this.fetchOrders(); // Je kunt de data ook verwerken zonder de hele lijst opnieuw op te halen
+      };
+
+      this.ws.onerror = (error) => {
+        console.error('WebSocket fout:', error);
+      };
+
+      this.ws.onclose = () => {
+        console.log('WebSocket gesloten');
+      };
+    },
+    fetchOrders() {
+      // Ophalen van bestellingen van de server
       axios
         .get('https://swear-api-uhq5.onrender.com/api/v1/orders', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
         .then((response) => {
-          // Als de verbinding succesvol is, log dan de data
-          console.log('Verbinding succesvol. Bestellingen opgehaald:', response.data);
-          this.orders = response.data.data; // Zet de ontvangen bestellingen in de orders array (controleer of de juiste key wordt gebruikt)
+          this.orders = response.data.data; // Zet de opgehaalde bestellingen in de orders array
         })
         .catch((error) => {
-          // Als er een fout optreedt, log dan de fout
-          console.error('Fout bij het ophalen van de bestellingen:', error);
-          if (error.response) {
-            console.error('Response Fout Status:', error.response.status);
-            console.error('Response Data:', error.response.data);
-          }
-          this.error = 'Er is een probleem met het ophalen van de bestellingen.'; // Toon een foutmelding
+          console.error('Fout bij het ophalen van bestellingen:', error);
+          this.error = 'Er is een probleem met het ophalen van de bestellingen.';
         });
     },
-    // Bepaal de statusstijl (bijv. groen voor 'verzonden', rood voor 'geannuleerd')
     getStatusClass(status) {
       return status === 'verzonden' ? 'status-sent' : 'status-canceled';
     },
+  },
+  beforeDestroy() {
+    // Sluit de WebSocket verbinding wanneer het component wordt vernietigd
+    if (this.ws) {
+      this.ws.close();
+    }
   },
 };
 </script>
