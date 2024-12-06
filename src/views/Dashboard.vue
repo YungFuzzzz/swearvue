@@ -19,7 +19,9 @@
           <p><strong>Kleur:</strong> {{ order.color }}</p>
           <p><strong>Maat:</strong> {{ order.size }}</p>
           <p><strong>Materiaal:</strong> {{ order.material }}</p>
-          <p><strong>Status:</strong> <span :class="getStatusClass(order.status)">{{ order.status }}</span></p>
+          <p><strong>Status:</strong> 
+            <span :class="getStatusClass(order.status)">{{ order.status }}</span>
+          </p>
         </div>
       </div>
     </div>
@@ -81,8 +83,15 @@ export default {
         console.log('WebSocket verbinding verbroken');
       });
     },
+
     getStatusClass(status) {
-      return status === 'verzonden' ? 'status-sent' : 'status-canceled';
+      if (status === 'Verzonden') {
+        return 'status-sent';
+      } else if (status === 'Geannuleerd') {
+        return 'status-canceled';
+      } else {
+        return 'status-pending';
+      }
     },
   },
   beforeDestroy() {
@@ -130,6 +139,10 @@ export default {
 
 .order-details p {
   margin: 5px 0;
+}
+
+.status-pending {
+  color: orange;
 }
 
 .status-sent {

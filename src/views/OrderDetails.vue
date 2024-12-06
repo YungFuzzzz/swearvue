@@ -12,6 +12,9 @@
       <!-- Knoppen voor de admin -->
       <button @click="markAsShipped" :disabled="order.status === 'Verzonden'">Markeer als verzonden</button>
       <button @click="cancelOrder" :disabled="order.status === 'Geannuleerd'">Annuleer bestelling</button>
+
+      <!-- Alleen tonen als de status 'Geannuleerd' is -->
+      <button v-if="order.status === 'Geannuleerd'" @click="deleteOrder">Verwijder bestelling</button>
     </div>
     <div v-else>
       <p>Loading order...</p>
@@ -74,7 +77,7 @@ export default {
     markAsShipped() {
       const orderId = this.order._id;
       axios
-        .patch(`https://swear-api-uhq5.onrender.com/api/v1/orders/${orderId}`, {
+        .put(`https://swear-api-uhq5.onrender.com/api/v1/orders/${orderId}`, {
           status: 'Verzonden',
         }, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -93,7 +96,7 @@ export default {
     cancelOrder() {
       const orderId = this.order._id;
       axios
-        .patch(`https://swear-api-uhq5.onrender.com/api/v1/orders/${orderId}`, {
+        .put(`https://swear-api-uhq5.onrender.com/api/v1/orders/${orderId}`, {
           status: 'Geannuleerd',
         }, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -108,6 +111,22 @@ export default {
           this.error = error.response ? error.response.data.message : 'Er is een probleem met het annuleren van de bestelling.';
         });
     },
+    // Functie om de bestelling te verwijderen
+    deleteOrder() {
+      const orderId = this.order._id;
+      axios
+        .delete(`https://swear-api-uhq5.onrender.com/api/v1/orders/${orderId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        })
+        .then(() => {
+          // Verwijder de bestelling uit de UI (kan herladen of navigeren naar een andere pagina)
+          this.$router.push('/dashboard'); // Redirect naar het dashboard of een andere relevante pagina
+        })
+        .catch((error) => {
+          console.error('Fout bij het verwijderen van de bestelling:', error);
+          this.error = error.response ? error.response.data.message : 'Er is een probleem met het verwijderen van de bestelling.';
+        });
+    },
   },
   beforeDestroy() {
     // Sluit de WebSocket verbinding wanneer het component wordt vernietigd
@@ -119,11 +138,6 @@ export default {
 </script>
 
 <style scoped>
-.order-details {
-  padding: 20px;
-  background-color: #f9f9f9;
-}
-
 .error {
   color: red;
   font-weight: bold;
@@ -131,16 +145,23 @@ export default {
 
 button {
   margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 14px;
 }
 
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+button:not(:disabled) {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background-color: #0056b3;
 }
 </style>
