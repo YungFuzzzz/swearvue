@@ -155,13 +155,13 @@ button:disabled {
 }
 
 button:not(:disabled) {
-  background-color: #007bff;
-  color: white;
+  background-color: #69ff47;
+  color: #000;
   border: none;
   cursor: pointer;
 }
 
 button:hover:not(:disabled) {
-  background-color: #0056b3;
+  text-decoration: underline;
 }
 </style>
