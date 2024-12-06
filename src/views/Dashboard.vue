@@ -1,14 +1,14 @@
 <template>
   <div class="dashboard">
     <h1>Dashboard</h1>
-    
-    <!-- Foutmelding weergeven als er een probleem is met het ophalen van bestellingen -->
+
+    <!-- Foutmelding weergeven -->
     <div v-if="error" class="error">{{ error }}</div>
 
-    <!-- Totaal aantal bestellingen weergeven -->
+    <!-- Totaal aantal bestellingen -->
     <p><strong>Aantal bestellingen:</strong> {{ orders.length }}</p>
 
-    <!-- Bestellingen weergeven -->
+    <!-- Lijst met bestellingen -->
     <div v-if="orders.length > 0" class="orders-list">
       <div v-for="order in orders" :key="order._id" class="order-card">
         <router-link :to="`/orders/${order._id}`" class="order-link">
@@ -21,10 +21,6 @@
           <p><strong>Materiaal:</strong> {{ order.material }}</p>
           <p><strong>Status:</strong> <span :class="getStatusClass(order.status)">{{ order.status }}</span></p>
         </div>
-
-        <div v-if="order.customization" class="customization">
-          <p><strong>Aangepaste opties:</strong> {{ order.customization }}</p>
-        </div>
       </div>
     </div>
 
@@ -35,58 +31,55 @@
 </template>
 
 <script>
+import { io } from 'socket.io-client';
 import axios from 'axios';
 
 export default {
   data() {
     return {
       orders: [],
-      error: null, // Foutmelding indien nodig
-      ws: null, // WebSocket verbinding
+      error: null,
+      socket: null,
     };
   },
   created() {
-    this.openWebSocket();
-    this.fetchOrders(); // Ophalen van bestellingen bij het laden van de pagina
+    this.fetchOrders();
+    this.setupWebSocket();
   },
   methods: {
-    openWebSocket() {
-      // Maak een WebSocket verbinding met de server
-      this.ws = new WebSocket('wss://je-websocket-server-url'); // Vergeet de juiste WebSocket URL in te stellen!
-
-      this.ws.onopen = () => {
-        console.log('WebSocket verbonden!');
-      };
-
-      this.ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log('WebSocket bericht ontvangen:', data);
-
-        // Werk de bestellingenlijst bij als er een wijziging is
-        this.fetchOrders(); // Je kunt de data ook verwerken zonder de hele lijst opnieuw op te halen
-      };
-
-      this.ws.onerror = (error) => {
-        console.error('WebSocket fout:', error);
-      };
-
-      this.ws.onclose = () => {
-        console.log('WebSocket gesloten');
-      };
-    },
     fetchOrders() {
-      // Ophalen van bestellingen van de server
       axios
         .get('https://swear-api-uhq5.onrender.com/api/v1/orders', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
         .then((response) => {
-          this.orders = response.data.data; // Zet de opgehaalde bestellingen in de orders array
+          this.orders = response.data.data;
         })
         .catch((error) => {
-          console.error('Fout bij het ophalen van bestellingen:', error);
+          console.error('Fout bij ophalen orders:', error);
           this.error = 'Er is een probleem met het ophalen van de bestellingen.';
         });
+    },
+    setupWebSocket() {
+      this.socket = io('https://swear-api-uhq5.onrender.com');
+
+      this.socket.on('connect', () => {
+        console.log('WebSocket verbonden!');
+      });
+
+      this.socket.on('orderUpdated', (updatedOrder) => {
+        console.log('Order bijgewerkt via WebSocket:', updatedOrder);
+
+        // Update specifieke order in de lijst
+        const index = this.orders.findIndex(order => order._id === updatedOrder._id);
+        if (index !== -1) {
+          this.orders.splice(index, 1, updatedOrder);
+        }
+      });
+
+      this.socket.on('disconnect', () => {
+        console.log('WebSocket verbinding verbroken');
+      });
     },
     getStatusClass(status) {
       return status === 'verzonden' ? 'status-sent' : 'status-canceled';
@@ -94,8 +87,8 @@ export default {
   },
   beforeDestroy() {
     // Sluit de WebSocket verbinding wanneer het component wordt vernietigd
-    if (this.ws) {
-      this.ws.close();
+    if (this.socket) {
+      this.socket.disconnect();
     }
   },
 };
@@ -147,12 +140,5 @@ export default {
 .status-canceled {
   color: red;
   font-weight: bold;
-}
-
-.customization {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #f1f1f1;
-  border-radius: 5px;
 }
 </style>
