@@ -44,7 +44,7 @@ export default {
   },
   created() {
     this.fetchOrders();
-    this.setupWebSocket();
+    this.setupWebSocket(); // Start de WebSocket verbinding
   },
   methods: {
     fetchOrders() {
