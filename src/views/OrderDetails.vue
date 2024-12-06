@@ -4,11 +4,67 @@
     <div v-if="error" class="error">{{ error }}</div>
     <div v-if="order">
       <h2>Order ID: {{ order._id }}</h2>
-      <p><strong>Kleur:</strong> {{ order.color }}</p>
-      <p><strong>Materiaal:</strong> {{ order.material }}</p>
+
+      <!-- Algemene bestelling details -->
+      <p><strong>Kleur:</strong> 
+        <span v-if="order.components?.laces">{{ order.components.laces.color }}</span>
+        <span v-else>Geen kleur beschikbaar</span>
+      </p>
+      <p><strong>Materiaal:</strong> 
+        <span v-if="order.components?.laces">{{ order.components.laces.material }}</span>
+        <span v-else>Geen materiaal beschikbaar</span>
+      </p>
       <p><strong>Maat:</strong> {{ order.size }}</p>
       <p><strong>Status:</strong> {{ order.status }}</p>
+
+      <!-- Solen -->
+      <p><strong>Sol Kleur:</strong> 
+        <span v-if="order.components?.sole">{{ order.components.sole.color }}</span>
+        <span v-else>Geen kleur beschikbaar</span>
+      </p>
+      <p><strong>Sol Materiaal:</strong> 
+        <span v-if="order.components?.sole">{{ order.components.sole.material }}</span>
+        <span v-else>Geen materiaal beschikbaar</span>
+      </p>
+
+      <!-- Binnenkant -->
+      <p><strong>Binnenkant Kleur:</strong> 
+        <span v-if="order.components?.inside">{{ order.components.inside.color }}</span>
+        <span v-else>Geen kleur beschikbaar</span>
+      </p>
+      <p><strong>Binnenkant Materiaal:</strong> 
+        <span v-if="order.components?.inside">{{ order.components.inside.material }}</span>
+        <span v-else>Geen materiaal beschikbaar</span>
+      </p>
+
+      <!-- Buitenste delen -->
+      <p><strong>Buitenste Deel 1 Kleur:</strong> 
+        <span v-if="order.components?.outside?.part1">{{ order.components.outside.part1.color }}</span>
+        <span v-else>Geen kleur beschikbaar</span>
+      </p>
+      <p><strong>Buitenste Deel 1 Materiaal:</strong> 
+        <span v-if="order.components?.outside?.part1">{{ order.components.outside.part1.material }}</span>
+        <span v-else>Geen materiaal beschikbaar</span>
+      </p>
       
+      <p><strong>Buitenste Deel 2 Kleur:</strong> 
+        <span v-if="order.components?.outside?.part2">{{ order.components.outside.part2.color }}</span>
+        <span v-else>Geen kleur beschikbaar</span>
+      </p>
+      <p><strong>Buitenste Deel 2 Materiaal:</strong> 
+        <span v-if="order.components?.outside?.part2">{{ order.components.outside.part2.material }}</span>
+        <span v-else>Geen materiaal beschikbaar</span>
+      </p>
+      
+      <p><strong>Buitenste Deel 3 Kleur:</strong> 
+        <span v-if="order.components?.outside?.part3">{{ order.components.outside.part3.color }}</span>
+        <span v-else>Geen kleur beschikbaar</span>
+      </p>
+      <p><strong>Buitenste Deel 3 Materiaal:</strong> 
+        <span v-if="order.components?.outside?.part3">{{ order.components.outside.part3.material }}</span>
+        <span v-else>Geen materiaal beschikbaar</span>
+      </p>
+
       <!-- Knoppen voor de admin -->
       <button @click="markAsShipped" :disabled="order.status === 'Verzonden'">Markeer als verzonden</button>
       <button @click="cancelOrder" :disabled="order.status === 'Geannuleerd'">Annuleer bestelling</button>

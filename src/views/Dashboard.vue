@@ -9,16 +9,13 @@
     <p><strong>Aantal bestellingen:</strong> {{ orders.length }}</p>
 
     <!-- Lijst met bestellingen -->
-    <div v-if="orders.length > 0" class="orders-list">
+    <div v-if="orders.length" class="orders-list">
       <div v-for="order in orders" :key="order._id" class="order-card">
         <router-link :to="`/orders/${order._id}`" class="order-link">
           <h3>Order ID: {{ order._id }}</h3>
         </router-link>
 
         <div class="order-details">
-          <p><strong>Kleur:</strong> {{ order.color }}</p>
-          <p><strong>Maat:</strong> {{ order.size }}</p>
-          <p><strong>Materiaal:</strong> {{ order.material }}</p>
           <p><strong>Status:</strong> 
             <span :class="getStatusClass(order.status)">{{ order.status }}</span>
           </p>
@@ -46,7 +43,7 @@ export default {
   },
   created() {
     this.fetchOrders();
-    this.setupWebSocket(); // Start de WebSocket verbinding
+    this.setupWebSocket();
   },
   methods: {
     fetchOrders() {
@@ -57,48 +54,31 @@ export default {
         .then((response) => {
           this.orders = response.data.data;
         })
-        .catch((error) => {
-          console.error('Fout bij ophalen orders:', error);
+        .catch(() => {
           this.error = 'Er is een probleem met het ophalen van de bestellingen.';
         });
     },
     setupWebSocket() {
       this.socket = io('https://swear-api-uhq5.onrender.com');
-
-      this.socket.on('connect', () => {
-        console.log('WebSocket verbonden!');
-      });
-
+      
       this.socket.on('orderUpdated', (updatedOrder) => {
-        console.log('Order bijgewerkt via WebSocket:', updatedOrder);
-
-        // Update specifieke order in de lijst
         const index = this.orders.findIndex(order => order._id === updatedOrder._id);
         if (index !== -1) {
           this.orders.splice(index, 1, updatedOrder);
         }
       });
-
-      this.socket.on('disconnect', () => {
-        console.log('WebSocket verbinding verbroken');
-      });
     },
-
     getStatusClass(status) {
-      if (status === 'Verzonden') {
-        return 'status-sent';
-      } else if (status === 'Geannuleerd') {
-        return 'status-canceled';
-      } else {
-        return 'status-pending';
-      }
+      const statusClasses = {
+        verzonden: 'status-sent',
+        geannuleerd: 'status-canceled',
+        default: 'status-pending'
+      };
+      return statusClasses[status] || statusClasses.default;
     },
   },
   beforeDestroy() {
-    // Sluit de WebSocket verbinding wanneer het component wordt vernietigd
-    if (this.socket) {
-      this.socket.disconnect();
-    }
+    this.socket?.disconnect();
   },
 };
 </script>
