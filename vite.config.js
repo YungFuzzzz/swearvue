@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'), // Zorg ervoor dat @ verwijst naar de src map
+      '@': path.resolve(__dirname, 'src'),
     },
   },
 });

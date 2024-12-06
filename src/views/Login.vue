@@ -68,7 +68,6 @@ export default {
     },
   },
   created() {
-    // Verbinden met WebSocket-server op Render.com
     this.socket = io('https://swear-api-uhq5.onrender.com/', {
       transports: ['websocket'],
       reconnectionAttempts: 5,

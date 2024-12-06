@@ -85,32 +85,31 @@ import { io } from 'socket.io-client';
 export default {
   data() {
     return {
-      order: null, // Houd de ordergegevens bij
-      error: null, // Foutmelding indien nodig
-      socket: null, // WebSocket object
+      order: null,
+      error: null,
+      socket: null,
     };
   },
   created() {
-    this.fetchOrderDetails(); // Haal de orderdetails op zodra het component wordt geladen
-    this.setupWebSocket(); // Zet de WebSocket-verbinding op
+    this.fetchOrderDetails();
+    this.setupWebSocket();
   },
   methods: {
     fetchOrderDetails() {
-      const orderId = this.$route.params.id; // Haal de order ID op uit de URL
+      const orderId = this.$route.params.id;
       axios
         .get(`https://swear-api-uhq5.onrender.com/api/v1/orders/${orderId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         })
         .then((response) => {
-          this.order = response.data.data; // Zet de ontvangen order in de `order` array
+          this.order = response.data.data;
         })
         .catch((error) => {
           console.error('Fout bij het ophalen van de bestelling:', error);
-          this.error = error.response ? error.response.data.message : 'Er is een probleem met het ophalen van de bestelling.'; // Toon een gedetailleerde foutmelding
+          this.error = error.response ? error.response.data.message : 'Er is een probleem met het ophalen van de bestelling.';
         });
     },
     setupWebSocket() {
-      // WebSocket verbinding maken
       this.socket = io('https://swear-api-uhq5.onrender.com');
 
       this.socket.on('connect', () => {
@@ -119,7 +118,6 @@ export default {
 
       this.socket.on('orderUpdated', (updatedOrder) => {
         console.log('Updated order ontvangen via WebSocket:', updatedOrder);
-        // Update de order als het de juiste is
         if (this.order && this.order._id === updatedOrder._id) {
           this.order = updatedOrder;
         }
@@ -129,7 +127,6 @@ export default {
         console.log('WebSocket verbinding verbroken');
       });
     },
-    // Functie om de bestelling als verzonden te markeren
     markAsShipped() {
       const orderId = this.order._id;
       axios
@@ -140,7 +137,6 @@ export default {
         })
         .then((response) => {
           this.order.status = 'Verzonden';
-          // Stuur de nieuwe status naar andere componenten via WebSocket
           this.socket.emit('orderUpdated', this.order);
         })
         .catch((error) => {
@@ -148,7 +144,6 @@ export default {
           this.error = error.response ? error.response.data.message : 'Er is een probleem met het bijwerken van de status.';
         });
     },
-    // Functie om de bestelling te annuleren
     cancelOrder() {
       const orderId = this.order._id;
       axios
@@ -159,7 +154,6 @@ export default {
         })
         .then((response) => {
           this.order.status = 'Geannuleerd';
-          // Stuur de nieuwe status naar andere componenten via WebSocket
           this.socket.emit('orderUpdated', this.order);
         })
         .catch((error) => {
@@ -167,7 +161,6 @@ export default {
           this.error = error.response ? error.response.data.message : 'Er is een probleem met het annuleren van de bestelling.';
         });
     },
-    // Functie om de bestelling te verwijderen
     deleteOrder() {
       const orderId = this.order._id;
       axios
@@ -175,8 +168,7 @@ export default {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         })
         .then(() => {
-          // Verwijder de bestelling uit de UI (kan herladen of navigeren naar een andere pagina)
-          this.$router.push('/dashboard'); // Redirect naar het dashboard of een andere relevante pagina
+          this.$router.push('/dashboard');
         })
         .catch((error) => {
           console.error('Fout bij het verwijderen van de bestelling:', error);
@@ -185,7 +177,6 @@ export default {
     },
   },
   beforeDestroy() {
-    // Sluit de WebSocket verbinding wanneer het component wordt vernietigd
     if (this.socket) {
       this.socket.disconnect();
     }

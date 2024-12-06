@@ -56,7 +56,6 @@ export default {
         return;
       }
       
-      // Voeg hier de logica toe voor het verzenden van de nieuwe wachtwoordverandering naar de API
       console.log('Wachtwoord wijziging verzonden', {
         oldPassword: this.oldPassword,
         newPassword: this.newPassword,

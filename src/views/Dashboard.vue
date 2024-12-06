@@ -69,12 +69,15 @@ export default {
       });
     },
     getStatusClass(status) {
+      const normalizedStatus = status.trim().toLowerCase();
+
       const statusClasses = {
         verzonden: 'status-sent',
         geannuleerd: 'status-canceled',
         default: 'status-pending'
       };
-      return statusClasses[status] || statusClasses.default;
+      
+      return statusClasses[normalizedStatus] || statusClasses.default;
     },
   },
   beforeDestroy() {
