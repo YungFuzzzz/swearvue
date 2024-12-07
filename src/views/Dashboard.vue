@@ -6,7 +6,7 @@
     <div v-if="error" class="error">{{ error }}</div>
 
     <!-- Totaal aantal bestellingen -->
-    <p><strong>Aantal bestellingen:</strong> {{ orders.length }}</p>
+    <p><strong>Amount of orders:</strong> {{ orders.length }}</p>
 
     <!-- Lijst met bestellingen -->
     <div v-if="orders.length" class="orders-list">
@@ -24,7 +24,7 @@
     </div>
 
     <div v-else>
-      <p>Geen bestellingen gevonden.</p>
+      <p>No orders found.</p>
     </div>
   </div>
 </template>
