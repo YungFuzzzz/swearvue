@@ -27,63 +27,40 @@
 </template>
 
 <script>
-import { io } from 'socket.io-client';
-
 export default {
   data() {
     return {
       username: '',
       password: '',
-      socket: null,
       errorMessage: '',
     };
   },
   methods: {
-    handleLogin() {
-      if (!this.socket || !this.socket.connected) {
-        console.error('Geen verbinding met de server.');
-        this.errorMessage = 'Geen verbinding met de server.';
-        return;
-      }
+    async handleLogin() {
+      try {
+        const response = await fetch('https://swear-api-uhq5.onrender.com/api/v1/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username: this.username, password: this.password }),
+        });
 
-      console.log('Login versturen:', { username: this.username, password: this.password });
+        const data = await response.json();
 
-      // Verstuur login event
-      this.socket.emit('login', {
-        username: this.username,
-        password: this.password,
-      });
-      this.socket.once('loginResponse', (response) => {
-        console.log('Serverantwoord ontvangen:', response);
-
-        if (response.success) {
-          console.log('Login succesvol!');
-          localStorage.setItem('token', response.token);
-          this.$router.push('/dashboard');
+        if (response.ok) {
+          console.log('Login succesvol:', data);
+          localStorage.setItem('token', data.data.token); // Save the token for further use
+          this.$router.push('/dashboard'); // Redirect to the dashboard
         } else {
-          console.error('Fout bij inloggen:', response.message);
-          this.errorMessage = response.message || 'Login mislukt.';
+          console.error('Login mislukt:', data.message);
+          this.errorMessage = data.message || 'Login mislukt. Controleer je gegevens.';
         }
-      });
+      } catch (error) {
+        console.error('Fout bij inloggen:', error);
+        this.errorMessage = 'Er is een fout opgetreden bij het inloggen. Probeer het opnieuw.';
+      }
     },
-  },
-  created() {
-    this.socket = io('https://swear-api-uhq5.onrender.com/', {
-      transports: ['websocket'],
-      reconnectionAttempts: 5,
-    });
-    this.socket.on('connect', () => {
-      console.log('Succesvol verbonden met de WebSocket-server:', this.socket.id);
-    });
-
-    this.socket.on('connect_error', (err) => {
-      console.error('Fout bij verbinden:', err.message);
-    });
-  },
-  beforeDestroy() {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
   },
 };
 </script>
