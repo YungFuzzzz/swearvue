@@ -6,63 +6,63 @@
       <h2>Order ID: {{ order._id }}</h2>
 
       <!-- Algemene bestelling details -->
-      <p><strong>Kleur:</strong> 
+      <p><strong>Color Laces:</strong> 
         <span v-if="order.components?.laces">{{ order.components.laces.color }}</span>
-        <span v-else>Geen kleur beschikbaar</span>
+        <span v-else>No color present</span>
       </p>
-      <p><strong>Materiaal:</strong> 
+      <p><strong>Material Laces:</strong> 
         <span v-if="order.components?.laces">{{ order.components.laces.material }}</span>
-        <span v-else>Geen materiaal beschikbaar</span>
+        <span v-else>No material present</span>
       </p>
-      <p><strong>Maat:</strong> {{ order.size }}</p>
+      <p><strong>Shoe Size:</strong> {{ order.size }}</p>
       <p><strong>Status:</strong> {{ order.status }}</p>
 
       <!-- Solen -->
-      <p><strong>Sol Kleur:</strong> 
+      <p><strong>Color Sole:</strong> 
         <span v-if="order.components?.sole">{{ order.components.sole.color }}</span>
-        <span v-else>Geen kleur beschikbaar</span>
+        <span v-else>No color present</span>
       </p>
-      <p><strong>Sol Materiaal:</strong> 
+      <p><strong>Material Sole:</strong> 
         <span v-if="order.components?.sole">{{ order.components.sole.material }}</span>
-        <span v-else>Geen materiaal beschikbaar</span>
+        <span v-else>No material present</span>
       </p>
 
       <!-- Binnenkant -->
-      <p><strong>Binnenkant Kleur:</strong> 
+      <p><strong>Color Sole Inside:</strong> 
         <span v-if="order.components?.inside">{{ order.components.inside.color }}</span>
-        <span v-else>Geen kleur beschikbaar</span>
+        <span v-else>No color present</span>
       </p>
-      <p><strong>Binnenkant Materiaal:</strong> 
+      <p><strong>Material Sole Inside:</strong> 
         <span v-if="order.components?.inside">{{ order.components.inside.material }}</span>
-        <span v-else>Geen materiaal beschikbaar</span>
+        <span v-else>No material present</span>
       </p>
 
       <!-- Buitenste delen -->
-      <p><strong>Buitenste Deel 1 Kleur:</strong> 
+      <p><strong>Color Outside Part 1:</strong> 
         <span v-if="order.components?.outside?.part1">{{ order.components.outside.part1.color }}</span>
-        <span v-else>Geen kleur beschikbaar</span>
+        <span v-else>No color present</span>
       </p>
-      <p><strong>Buitenste Deel 1 Materiaal:</strong> 
+      <p><strong>Material Outside Part 1:</strong> 
         <span v-if="order.components?.outside?.part1">{{ order.components.outside.part1.material }}</span>
-        <span v-else>Geen materiaal beschikbaar</span>
+        <span v-else>No material present</span>
       </p>
       
-      <p><strong>Buitenste Deel 2 Kleur:</strong> 
+      <p><strong>Color Outside Part 2:</strong> 
         <span v-if="order.components?.outside?.part2">{{ order.components.outside.part2.color }}</span>
-        <span v-else>Geen kleur beschikbaar</span>
+        <span v-else>No color present</span>
       </p>
-      <p><strong>Buitenste Deel 2 Materiaal:</strong> 
+      <p><strong>Material Outside Part 2:</strong> 
         <span v-if="order.components?.outside?.part2">{{ order.components.outside.part2.material }}</span>
-        <span v-else>Geen materiaal beschikbaar</span>
+        <span v-else>No material present</span>
       </p>
       
-      <p><strong>Buitenste Deel 3 Kleur:</strong> 
+      <p><strong>Color Outside Part 3:</strong> 
         <span v-if="order.components?.outside?.part3">{{ order.components.outside.part3.color }}</span>
-        <span v-else>Geen kleur beschikbaar</span>
+        <span v-else>No color present</span>
       </p>
-      <p><strong>Buitenste Deel 3 Materiaal:</strong> 
+      <p><strong>Material Outside Part 3:</strong> 
         <span v-if="order.components?.outside?.part3">{{ order.components.outside.part3.material }}</span>
-        <span v-else>Geen materiaal beschikbaar</span>
+        <span v-else>No material present</span>
       </p>
 
       <!-- Knoppen voor de admin -->
